@@ -168,30 +168,43 @@
             font-weight: 600;
         }
 
+        .result-wrapper {
+            position: relative;
+        }
+
         .result-content {
             background: white;
             padding: 10px;
             border-radius: 3px;
             word-break: break-all;
             font-family: 'Courier New', monospace;
-            position: relative;
+            padding-right: 50px;
+            min-height: 40px;
         }
 
         .copy-button {
             position: absolute;
-            top: 8px;
-            right: 8px;
+            top: 10px;
+            right: 10px;
             background: #667eea;
             color: white;
             border: none;
-            padding: 6px 12px;
+            padding: 8px 16px;
             border-radius: 3px;
             cursor: pointer;
             font-size: 0.85em;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            z-index: 10;
         }
 
         .copy-button:hover {
             background: #764ba2;
+            transform: scale(1.05);
+        }
+
+        .copy-button:active {
+            transform: scale(0.95);
         }
 
         .info-box {
@@ -213,10 +226,17 @@
             font-size: 0.9em;
             margin-top: 10px;
             display: none;
+            font-weight: 600;
         }
 
         .success.show {
             display: block;
+            animation: fadeInOut 2s ease-in-out;
+        }
+
+        @keyframes fadeInOut {
+            0%, 100% { opacity: 0; }
+            50% { opacity: 1; }
         }
 
         @media (max-width: 600px) {
@@ -239,6 +259,11 @@
             .tab-button {
                 padding: 10px 15px;
                 font-size: 0.9em;
+            }
+
+            .copy-button {
+                padding: 6px 12px;
+                font-size: 0.75em;
             }
         }
     </style>
@@ -279,8 +304,10 @@
 
             <div id="encodeResult" class="result">
                 <div class="result-label">Encoded Text (with hidden message)</div>
-                <div class="result-content" id="encodeResultContent"></div>
-                <button class="copy-button" onclick="copyToClipboard('encodeResultContent')">Copy</button>
+                <div class="result-wrapper">
+                    <div class="result-content" id="encodeResultContent"></div>
+                    <button class="copy-button" onclick="copyToClipboard('encodeResultContent')">📋 Copy</button>
+                </div>
                 <div class="success" id="encodeCopySuccess">✓ Copied to clipboard!</div>
             </div>
         </div>
@@ -303,8 +330,10 @@
 
             <div id="decodeResult" class="result">
                 <div class="result-label">Extracted Secret Message</div>
-                <div class="result-content" id="decodeResultContent"></div>
-                <button class="copy-button" onclick="copyToClipboard('decodeResultContent')">Copy</button>
+                <div class="result-wrapper">
+                    <div class="result-content" id="decodeResultContent"></div>
+                    <button class="copy-button" onclick="copyToClipboard('decodeResultContent')">📋 Copy</button>
+                </div>
                 <div class="success" id="decodeCopySuccess">✓ Copied to clipboard!</div>
             </div>
         </div>
