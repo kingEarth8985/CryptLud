@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CryptLud - Hidden Character Encoder/Decoder</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            max-width: 800px;
+            width: 100%;
+            padding: 40px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+        }
+
+        .subtitle {
+            color: #666;
+            font-size: 1.1em;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #eee;
+        }
+
+        .tab-button {
+            padding: 12px 24px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1em;
+            color: #999;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .tab-button.active {
+            color: #667eea;
+            border-bottom-color: #667eea;
+        }
+
+        .tab-button:hover {
+            color: #667eea;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+        }
+
+        textarea, input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #eee;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.95em;
+            resize: vertical;
+            transition: border-color 0.3s ease;
+        }
+
+        textarea:focus, input[type="text"]:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        textarea {
+            min-height: 120px;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        button {
+            flex: 1;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 5px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: #f0f0f0;
+            color: #333;
+        }
+
+        .btn-secondary:hover {
+            background: #e0e0e0;
+        }
+
+        .result {
+            background: #f9f9f9;
+            border: 2px solid #eee;
+            border-radius: 5px;
+            padding: 15px;
+            margin-top: 20px;
+            display: none;
+        }
+
+        .result.show {
+            display: block;
+        }
+
+        .result-label {
+            color: #666;
+            font-size: 0.9em;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .result-content {
+            background: white;
+            padding: 10px;
+            border-radius: 3px;
+            word-break: break-all;
+            font-family: 'Courier New', monospace;
+            position: relative;
+        }
+
+        .copy-button {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 0.85em;
+        }
+
+        .copy-button:hover {
+            background: #764ba2;
+        }
+
+        .info-box {
+            background: #e8f4f8;
+            border-left: 4px solid #667eea;
+            padding: 15px;
+            border-radius: 3px;
+            margin-bottom: 20px;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .info-box strong {
+            color: #667eea;
+        }
+
+        .success {
+            color: #4caf50;
+            font-size: 0.9em;
+            margin-top: 10px;
+            display: none;
+        }
+
+        .success.show {
+            display: block;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 1.8em;
+            }
+
+            .button-group {
+                flex-direction: column;
+            }
+
+            .tabs {
+                gap: 5px;
+            }
+
+            .tab-button {
+                padding: 10px 15px;
+                font-size: 0.9em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🔐 CryptLud</h1>
+            <p class="subtitle">Hide secrets in plain sight using zero-width characters</p>
+        </header>
+
+        <div class="tabs">
+            <button class="tab-button active" onclick="switchTab('encode')">Encode</button>
+            <button class="tab-button" onclick="switchTab('decode')">Decode</button>
+            <button class="tab-button" onclick="switchTab('about')">About</button>
+        </div>
+
+        <!-- Encode Tab -->
+        <div id="encode" class="tab-content active">
+            <div class="info-box">
+                <strong>How it works:</strong> Enter visible text and a secret message. The secret will be encoded as invisible zero-width characters appended to your visible text.
+            </div>
+
+            <div class="form-group">
+                <label for="encodeVisible">Visible Text</label>
+                <textarea id="encodeVisible" placeholder="This is the text people will see..."></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="encodeSecret">Secret Message</label>
+                <textarea id="encodeSecret" placeholder="This is your hidden message..."></textarea>
+            </div>
+
+            <div class="button-group">
+                <button class="btn-primary" onclick="encodeMessage()">Encode</button>
+                <button class="btn-secondary" onclick="clearEncode()">Clear</button>
+            </div>
+
+            <div id="encodeResult" class="result">
+                <div class="result-label">Encoded Text (with hidden message)</div>
+                <div class="result-content" id="encodeResultContent"></div>
+                <button class="copy-button" onclick="copyToClipboard('encodeResultContent')">Copy</button>
+                <div class="success" id="encodeCopySuccess">✓ Copied to clipboard!</div>
+            </div>
+        </div>
+
+        <!-- Decode Tab -->
+        <div id="decode" class="tab-content">
+            <div class="info-box">
+                <strong>How it works:</strong> Paste the encoded text (which contains hidden characters) and extract the secret message that was embedded within it.
+            </div>
+
+            <div class="form-group">
+                <label for="decodeStegoText">Encoded Text (with hidden message)</label>
+                <textarea id="decodeStegoText" placeholder="Paste the text containing the hidden message..."></textarea>
+            </div>
+
+            <div class="button-group">
+                <button class="btn-primary" onclick="decodeMessage()">Decode</button>
+                <button class="btn-secondary" onclick="clearDecode()">Clear</button>
+            </div>
+
+            <div id="decodeResult" class="result">
+                <div class="result-label">Extracted Secret Message</div>
+                <div class="result-content" id="decodeResultContent"></div>
+                <button class="copy-button" onclick="copyToClipboard('decodeResultContent')">Copy</button>
+                <div class="success" id="decodeCopySuccess">✓ Copied to clipboard!</div>
+            </div>
+        </div>
+
+        <!-- About Tab -->
+        <div id="about" class="tab-content">
+            <div class="info-box">
+                <h3 style="margin-bottom: 15px;">About CryptLud</h3>
+                <p style="margin-bottom: 15px;">
+                    CryptLud is a steganography tool that hides secret messages using <strong>zero-width characters</strong> 
+                    — invisible Unicode characters that take up no visible space.
+                </p>
+                <h4 style="margin-top: 20px; margin-bottom: 10px;">Technical Details</h4>
+                <p style="margin-bottom: 10px;">
+                    <strong>Encoding Process:</strong>
+                </p>
+                <ul style="margin-left: 20px; margin-bottom: 15px; line-height: 1.8;">
+                    <li>Secret message is converted to UTF-8 bytes</li>
+                    <li>Each byte is converted to 8 bits</li>
+                    <li>Bit 0 → Zero-Width Space (U+200B)</li>
+                    <li>Bit 1 → Zero-Width Non-Joiner (U+200C)</li>
+                    <li>Invisible bits are appended to visible text</li>
+                </ul>
+                <p style="margin-bottom: 10px;">
+                    <strong>Decoding Process:</strong>
+                </p>
+                <ul style="margin-left: 20px; margin-bottom: 15px; line-height: 1.8;">
+                    <li>Zero-width characters are extracted from text</li>
+                    <li>Characters are converted back to bits</li>
+                    <li>Bits are grouped into bytes</li>
+                    <li>Bytes are decoded as UTF-8 text</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Zero-width character constants
+        const BIT0 = '\u200B'; // Zero-width space
+        const BIT1 = '\u200C'; // Zero-width non-joiner
+
+        function switchTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+
+            // Remove active class from all buttons
+            document.querySelectorAll('.tab-button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+
+            // Show selected tab
+            document.getElementById(tabName).classList.add('active');
+
+            // Add active class to clicked button
+            event.target.classList.add('active');
+        }
+
+        function encodeMessage() {
+            const visibleText = document.getElementById('encodeVisible').value;
+            const secretText = document.getElementById('encodeSecret').value;
+
+            if (!visibleText || !secretText) {
+                alert('Please fill in both visible text and secret message');
+                return;
+            }
+
+            let hiddenBits = '';
+            const bytes = new TextEncoder().encode(secretText);
+
+            // Convert each byte to 8 bits
+            for (let byte of bytes) {
+                for (let i = 7; i >= 0; i--) {
+                    const bit = (byte >> i) & 1;
+                    hiddenBits += bit ? BIT1 : BIT0;
+                }
+            }
+
+            const encodedText = visibleText + hiddenBits;
+            
+            document.getElementById('encodeResultContent').textContent = encodedText;
+            document.getElementById('encodeResult').classList.add('show');
+            document.getElementById('encodeCopySuccess').classList.remove('show');
+        }
+
+        function decodeMessage() {
+            const stegoText = document.getElementById('decodeStegoText').value;
+
+            if (!stegoText) {
+                alert('Please paste encoded text');
+                return;
+            }
+
+            let bits = '';
+
+            // Extract zero-width characters and convert to bits
+            for (let char of stegoText) {
+                if (char === BIT0) bits += '0';
+                else if (char === BIT1) bits += '1';
+            }
+
+            if (bits.length === 0) {
+                alert('No hidden message found in the text');
+                return;
+            }
+
+            // Convert bits to bytes
+            let bytes = [];
+            for (let i = 0; i < bits.length; i += 8) {
+                const byteStr = bits.substring(i, i + 8);
+                if (byteStr.length === 8) {
+                    bytes.push(parseInt(byteStr, 2));
+                }
+            }
+
+            try {
+                const decodedText = new TextDecoder().decode(new Uint8Array(bytes));
+                document.getElementById('decodeResultContent').textContent = decodedText;
+                document.getElementById('decodeResult').classList.add('show');
+                document.getElementById('decodeCopySuccess').classList.remove('show');
+            } catch (e) {
+                alert('Error decoding message: ' + e.message);
+            }
+        }
+
+        function copyToClipboard(elementId) {
+            const content = document.getElementById(elementId).textContent;
+            navigator.clipboard.writeText(content).then(() => {
+                const successId = elementId === 'encodeResultContent' ? 'encodeCopySuccess' : 'decodeCopySuccess';
+                const successElement = document.getElementById(successId);
+                successElement.classList.add('show');
+                setTimeout(() => {
+                    successElement.classList.remove('show');
+                }, 2000);
+            }).catch(() => {
+                alert('Failed to copy to clipboard');
+            });
+        }
+
+        function clearEncode() {
+            document.getElementById('encodeVisible').value = '';
+            document.getElementById('encodeSecret').value = '';
+            document.getElementById('encodeResult').classList.remove('show');
+        }
+
+        function clearDecode() {
+            document.getElementById('decodeStegoText').value = '';
+            document.getElementById('decodeResult').classList.remove('show');
+        }
+    </script>
+</body>
+</html>
